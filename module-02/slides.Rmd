@@ -1,0 +1,347 @@
+---
+title: "Module 2: Audit & Correspondence Studies"
+subtitle: "Ge et al. (2016) and the Workhorse of the Modern Literature"
+output:
+  xaringan::moon_reader:
+    css: [default, default-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{css, echo=FALSE}
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, fig.align = "center",
+  fig.width = 10, fig.height = 4.2, dpi = 150,
+  message = FALSE, warning = FALSE
+)
+library(tidyverse)
+theme_set(theme_minimal(base_size = 14))
+```
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td><b>2</b></td><td><b>Audit & Correspondence Studies</b> <i>(you are here)</i></td><td>← current</td></tr>
+<tr><td>3</td><td>Decomposition Methods</td><td>upcoming</td></tr>
+<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
+<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+</table>
+
+---
+
+# Why Audit Studies Exist
+
+Module 1 ended with a frustration: **regression with controls cannot distinguish**
+
+> "no discrimination" from "discrimination perfectly mediated by a proxy"
+
+--
+
+If race influences neighborhood and neighborhood influences acceptance, then *controlling for neighborhood* removes the very channel through which race operates.
+
+--
+
+The fix: **manufacture variation in the protected attribute** that is uncorrelated with everything else.
+
+--
+
+That's exactly what audit studies do. They are the only design that gives a clean causal estimate without strong structural assumptions.
+
+---
+
+# The Matched-Pair Audit Design
+
+1. Construct two profiles, $A$ and $B$, **identical on everything observable** except the protected attribute (or its proxy)
+
+2. Submit both to the same gatekeeper (employer, driver, landlord)
+
+3. Record the decision (interview / acceptance / approval)
+
+4. Compare rates
+
+--
+
+**Identification:** the only difference between profiles is the protected attribute, so any difference in outcomes is causally attributable to it. **No controls needed** — the design handles confounding by construction.
+
+---
+
+# The Canonical Example: Bertrand-Mullainathan (2004)
+
+**Setting:** ~5,000 résumés sent in response to job postings in Boston and Chicago.
+
+--
+
+**Randomization:**
+- **Name** (white-sounding: Emily, Greg vs African-American–sounding: Lakisha, Jamal)
+- **Quality** (high vs low credentials)
+
+--
+
+**Result:** white-named résumés got **~50% more callbacks** than identical Black-named résumés.
+
+--
+
+**Bonus finding:** the "credential premium" was much larger for white-named résumés. Black candidates couldn't compensate via résumé quality.
+
+---
+
+# Ge, Knittel, MacKenzie, Zoepf (2016)
+
+The canonical ride-sharing audit study. The **centerpiece of this module**.
+
+--
+
+**Setting:** Boston and Seattle, on UberX and Lyft.
+
+**Design:** RAs created rider profiles with stereotypically white and stereotypically African-American–sounding names. They followed pre-specified routes and submitted ride requests in matched pairs.
+
+--
+
+**Sample:** ~1,500 ride requests across the two cities.
+
+**Outcomes measured:** cancellation rate, wait time, trip time, cost.
+
+---
+
+# The Headline Results
+
+| Outcome | Setting | White | African-American | Ratio |
+|---|---|---|---|---|
+| Cancellation rate | Boston, UberX, male | 4.9% | 10.1% | **~2×** |
+| Wait time | Seattle, all | baseline | +30% | longer |
+| Travel time | Boston, female | baseline | longer | (indirect routes) |
+
+--
+
+**The discrimination is large, statistically significant, and consistent across cities and profiles.**
+
+--
+
+The differences look small in absolute terms (5pp on cancellation), but for the affected riders this is a meaningfully degraded service experience.
+
+---
+
+# The Clever Bit: Seattle
+
+In Seattle, Uber **doesn't show rider names or photos** to drivers before the driver accepts the request.
+
+--
+
+The discrimination still happens. **How?**
+
+--
+
+The likely answer: drivers are using **pickup neighborhood** as a proxy for the rider's race, and the destination address (which they see after accepting) for further inference.
+
+--
+
+This is **exactly the Phelps story** from Module 1, embedded in real data:
+
+- Drivers don't see race directly
+- They use a correlated feature (location) to infer it
+- The result is racially disparate outcomes via a "race-blind" matching mechanism
+
+--
+
+This finding is what made the paper a foundational reference for the algorithmic-fairness literature that came after.
+
+---
+
+# What Audits Identify (and Don't)
+
+| Question | Audit answers? |
+|---|---|
+| Is there a *causal* effect of perceived group membership? | **Yes** |
+| Is the discrimination taste-based or statistical? | **No** |
+| Does the discrimination persist in equilibrium? | **No** |
+| Would policy X eliminate it? | **No** |
+| Is the gap "fair" by some normative criterion? | **No** |
+| What's the aggregate welfare loss? | **No** |
+
+--
+
+The right way to read an audit study: **clean documentation that the discrimination exists and is large**, *without* strong claims about mechanism or policy.
+
+---
+
+# Standard Threats to Validity
+
+**1.** The manipulation must work (gatekeeper sees what we intended)
+
+--
+
+**2.** Profiles must be matched on everything else (subtle confounders like socioeconomic inferences from names)
+
+--
+
+**3.** The sample of gatekeepers must be representative (one city ≠ the world)
+
+--
+
+**4.** The decision being measured must be the one that matters (callback ≠ hire ≠ wage)
+
+--
+
+**5.** Ethical / legal: audit studies essentially defraud the gatekeeper. IRB approval is non-trivial; some jurisdictions push back.
+
+---
+class: inverse, center, middle
+
+# Exercise
+### A Stylized Ge et al. Replication
+
+---
+
+# Setup
+
+```{r data-gen}
+set.seed(2026)
+n_rides_per_group <- 500
+baseline_cancel_A <- 0.05
+discrimination    <- 0.05  # B sees +5pp cancellation rate
+
+audit <- bind_rows(
+  tibble(profile = "A",
+         cancelled = rbinom(n_rides_per_group, 1, baseline_cancel_A)),
+  tibble(profile = "B",
+         cancelled = rbinom(n_rides_per_group, 1,
+                            baseline_cancel_A + discrimination))
+)
+
+audit |>
+  group_by(profile) |>
+  summarise(n = n(),
+            cancellation = round(mean(cancelled), 3),
+            .groups = "drop") |>
+  knitr::kable()
+```
+
+---
+
+# Estimating the Audit Effect
+
+```{r audit-test}
+counts <- audit |>
+  group_by(profile) |>
+  summarise(x = sum(cancelled), n = n(), .groups = "drop")
+
+prop_test <- prop.test(x = counts$x, n = counts$n, correct = FALSE)
+gap_estimate <- diff(rev(prop_test$estimate))
+ci <- c(-prop_test$conf.int[2], -prop_test$conf.int[1])
+```
+
+--
+
+```{r audit-results, echo=FALSE}
+tibble(
+  Statistic = c("Estimated gap (B - A)", "95% CI", "p-value"),
+  Value = c(round(gap_estimate, 4),
+            paste0("[", round(ci[1], 4), ", ", round(ci[2], 4), "]"),
+            format.pval(prop_test$p.value, digits = 3))
+) |> knitr::kable()
+```
+
+The point estimate matches the true effect (≈ 0.05), and the CI excludes zero.
+
+---
+
+# How Many Rides Do You Need? (Power Calculation)
+
+```{r power-calc}
+power_test <- power.prop.test(
+  p1 = 0.05, p2 = 0.10,
+  sig.level = 0.05, power = 0.8
+)
+ceiling(power_test$n)
+```
+
+--
+
+To detect a **5 pp gap** at 80% power, you need ~470 rides **per profile**, or ~940 total.
+
+--
+
+For a more realistic **2 pp gap**:
+
+```{r power-2pp, echo=FALSE}
+small_gap <- power.prop.test(p1 = 0.05, p2 = 0.07,
+                              sig.level = 0.05, power = 0.8)
+cat(ceiling(small_gap$n), "per group →", 2 * ceiling(small_gap$n), "total\n")
+```
+
+That's why most field audit studies are **expensive** — and why algorithmic / scraped audits (Module 4) became dominant.
+
+---
+
+# Power vs Sample Size (Monte Carlo)
+
+```{r power-curve, echo=FALSE, fig.height=4}
+simulate_audit <- function(n_per_group, p_A, p_B) {
+  x <- rbinom(2, c(n_per_group, n_per_group), c(p_A, p_B))
+  test <- suppressWarnings(prop.test(x, c(n_per_group, n_per_group), correct = FALSE))
+  test$p.value < 0.05
+}
+
+set.seed(2027)
+sample_sizes <- c(50, 100, 200, 500, 1000)
+power_curve <- map_dfr(sample_sizes, function(ng) {
+  rej <- replicate(2000, simulate_audit(ng, 0.05, 0.10))
+  tibble(n_per_group = ng, power = mean(rej))
+})
+
+ggplot(power_curve, aes(n_per_group, power)) +
+  geom_line(linewidth = 1.2, color = "firebrick") +
+  geom_point(size = 3, color = "firebrick") +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey50") +
+  scale_x_log10() +
+  labs(title = "Audit-study power vs sample size",
+       subtitle = "Detecting a 5pp cancellation gap (5% vs 10%) at α = 0.05",
+       x = "Rides per profile (log scale)", y = "Power")
+```
+
+---
+class: inverse
+
+# The Key Takeaways
+
+<br>
+
+### 1. Audits are the only design that gives clean causal identification of discrimination without strong structural assumptions.
+
+--
+
+<br>
+
+### 2. Ge et al. (2016) is the canonical ride-sharing example. Cancellation rates 2× higher for African-American riders.
+
+--
+
+<br>
+
+### 3. The Seattle finding showed that even "anonymized" matching produces racial disparities via correlated features — the empirical anchor for the algorithmic-fairness literature.
+
+---
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td>2</td><td>Audit & Correspondence Studies <i>(just finished)</i></td><td>✓ done</td></tr>
+<tr><td><b>3</b></td><td><b>Decomposition Methods (Cook et al. 2021)</b></td><td>next</td></tr>
+<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
+<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+</table>
+
+Say **"start module 3"** when ready.

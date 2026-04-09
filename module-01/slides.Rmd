@@ -1,0 +1,422 @@
+---
+title: "Module 1: Theory Primer"
+subtitle: "Becker and Phelps, with Ride-Sharing Examples"
+output:
+  xaringan::moon_reader:
+    css: [default, default-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{css, echo=FALSE}
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, fig.align = "center",
+  fig.width = 10, fig.height = 4.2, dpi = 150,
+  message = FALSE, warning = FALSE
+)
+library(tidyverse)
+theme_set(theme_minimal(base_size = 14))
+```
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td><b>1</b></td><td><b>Theory Primer: Becker + Phelps</b> <i>(you are here)</i></td><td>← current</td></tr>
+<tr><td>2</td><td>Audit & Correspondence Studies</td><td>upcoming</td></tr>
+<tr><td>3</td><td>Decomposition Methods (Cook et al. 2021)</td><td>upcoming</td></tr>
+<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
+<tr><td>5</td><td>Modern Methods & The Practitioner Question</td><td>upcoming</td></tr>
+</table>
+
+---
+
+# The Question
+
+Why does an economic agent treat one group differently from another **even when productivity is identical**?
+
+--
+
+Two classical answers, both still cited 50+ years later:
+
+--
+
+- **Becker (1957):** because the agent has a **taste** against group $B$. Discrimination is preference-driven.
+
+--
+
+- **Phelps (1972):** because the agent has **noisy information** about individuals and rationally falls back on group averages. Discrimination is information-driven.
+
+--
+
+The two answers have **very different policy implications**, and both apply to ride-sharing.
+
+---
+
+# Becker (1957): Taste-Based Discrimination
+
+An employer / coworker / customer dislikes interacting with group $B$ and acts as if hiring (or buying from) a $B$-type costs an extra $d$ — the **discrimination coefficient**.
+
+--
+
+| Source | Who has the taste | Mechanism |
+|---|---|---|
+| Employer | The hiring manager | Won't hire $B$ even when productive |
+| Coworker | $A$-type employees | Demand a wage premium for mixed workplaces |
+| Customer | The consumer | Won't buy from a $B$-type |
+
+--
+
+**The famous prediction:** in a competitive market, taste-based discrimination is **eroded by competition**. A non-prejudiced firm hires cheaper $B$-types and undercuts the prejudiced firm.
+
+---
+
+# But Taste-Based Discrimination Persists. Why?
+
+In practice, the competitive-erosion prediction often fails. Several reasons, none fully satisfying:
+
+--
+
+1. **Customer discrimination** — if customers themselves prefer $A$-types, the firm has a *profit* reason to discriminate. Competition makes it **worse**, not better.
+
+--
+
+2. **Coworker discrimination** — workplaces stay segregated because mixing carries a wage premium
+
+--
+
+3. **Search and matching frictions** — markets aren't frictionless, so prejudiced employers don't pay the full cost of their tastes
+
+--
+
+4. **Low-cost discriminatory actions** — if the prejudicial act is cheap (e.g., cancelling a ride), the prejudiced agent doesn't need to be priced out
+
+---
+
+# Becker in the Wild: Ge et al. (2016)
+
+**Field experiment**: matched-pair audit on Uber and Lyft in Boston and Seattle.
+
+--
+
+- Researchers created rider profiles with stereotypically white and stereotypically African-American–sounding names
+- Submitted thousands of ride requests
+- Measured cancellation rates and wait times
+
+--
+
+**Result:** cancellation rates ~**2× higher** for African-American riders. Wait times longer too.
+
+--
+
+**This is Becker, customer flavor.**
+
+- Drivers are "consumers" of the ride request
+- They're acting on a taste-based preference
+- Productivity (the fare) is identical across the two profiles
+- Competition does **not** erase it: cancelling is essentially free for the driver
+
+--
+
+We'll do this paper properly in Module 2.
+
+---
+
+# Phelps (1972): Statistical Discrimination
+
+Forget tastes. Suppose the employer is *perfectly fair* but faces a **signal-extraction problem**: each candidate has a noisy signal of productivity, and the employer Bayes-updates from group priors.
+
+--
+
+If the priors **differ across groups**, then for the same observed signal, the posterior estimate is **higher for $A$-types than for $B$-types** — and the employer rationally pays them more.
+
+--
+
+**No prejudice. No taste. Just Bayes.**
+
+---
+
+# Phelps: Two Distinct Mechanisms
+
+**1. Different group means.** Group $A$'s productivity distribution is centered higher (for whatever historical reason).
+
+The Bayesian update is the obvious one — for the same signal, the posterior is shifted in $A$'s favor.
+
+--
+
+**2. Different signal precision.** Group $A$ and $B$ have the *same* mean productivity, but the test/résumé/interview is **noisier** for $B$-types.
+
+The Bayesian employer puts more weight on the prior for $B$-types (since the signal is less informative) and less on the noisy individual signal.
+
+--
+
+Productive $B$-types get penalized for having less-informative signals — even though the *group* mean is the same.
+
+---
+
+# Why Phelps Matters More in 2026
+
+**Modern prediction systems are literally statistical-discrimination engines.**
+
+--
+
+- Take a noisy signal (your features)
+- Update against a prior estimated from training data
+- Output a decision
+
+--
+
+If the training data has different distributions across groups, the model will rationally treat them differently — *exactly as Phelps describes*.
+
+--
+
+The model isn't prejudiced. It's optimizing.
+
+---
+
+# Phelps in the Wild: The Uber Acceptance Model
+
+From Module 2 of the ML course: a race-blind logistic regression for driver acceptance learns that **neighborhood is predictive**.
+
+--
+
+- The model assigns a posterior probability of acceptance to each request
+- That posterior depends on the prior estimated from training data
+- The prior differs by neighborhood (because base rates of acceptance genuinely differ)
+- Therefore the posterior differs systematically by neighborhood — which correlates strongly with race
+
+--
+
+**The model is statistically discriminating. Perfectly. Rationally.** In the sense Phelps had in mind in 1972.
+
+--
+
+The hard question for an applied economist: should we *care* about that, given the model is "just" doing Bayesian updating? Most modern policy frameworks (disparate-impact doctrine) say yes.
+
+---
+
+# Becker vs Phelps: The Cheat Sheet
+
+| | Becker (taste-based) | Phelps (statistical) |
+|---|---|---|
+| Cause | Prejudice / preference | Rational use of imperfect info |
+| Eliminated by competition? | In theory yes; in practice often no | No |
+| Disappears with better individual signals? | No | Yes |
+| Profit cost to discriminator | Yes | No |
+| Empirical fingerprint | Higher returns at non-discriminating firms | Patterns scale with signal noise / prior gaps |
+
+--
+
+**These models are not mutually exclusive.** Both forces operate in any real market. The empirical literature (Module 3) tries to decompose observed gaps into these portions, with limited success.
+
+---
+
+# Coate-Loury (1993): The Self-Fulfilling Equilibrium
+
+A nasty extension of Phelps. If employers **expect** $B$-types to be less productive:
+
+- $B$-types rationally invest **less** in skill (the return is lower)
+- This justifies the employers' belief
+- The cycle continues
+
+--
+
+Multiple equilibria are possible:
+- A "good" one where everyone invests and everyone is paid fairly
+- A "bad" one where group $B$ doesn't invest and gets paid less
+
+--
+
+Both are consistent with rational behavior. **Affirmative action** in this model works by *temporarily distorting incentives* to push the system from the bad equilibrium to the good one.
+
+---
+
+# What This Tells the Practitioner
+
+When you're auditing a system, ask:
+
+--
+
+1. Is the discriminator a **person** or an **algorithm**?
+
+--
+
+2. Does the discriminator have a **profit reason** to do it? *(If yes, Becker's competitive-erosion prediction won't work.)*
+
+--
+
+3. Is the **signal** about individuals **noisy**? *(If yes, Phelps says even rational agents will lean on group priors.)*
+
+--
+
+4. Is the **prior** itself a product of past discrimination? *(If yes, you're in Coate-Loury territory and "rational" behavior just perpetuates injustice.)*
+
+--
+
+These four questions are more useful in practice than memorizing formulas.
+
+---
+class: inverse, center, middle
+
+# Exercise
+### Two Indistinguishable Acceptance Gaps
+
+---
+
+# Setup
+
+We simulate 5,000 ride requests across two groups, $A$ and $B$, where the **true** acceptance probability is identical.
+
+```{r data-gen}
+set.seed(2026); n <- 5000
+riders <- tibble(
+  rider_id  = 1:n,
+  group     = sample(c("A","B"), n, replace = TRUE,
+                     prob = c(0.6, 0.4)),
+  neighborhood = ifelse(
+    runif(n) < ifelse(.data$group == "B", 0.65, 0.25),
+    "Eastside", "Downtown"),
+  hour      = sample(0:23, n, replace = TRUE),
+  is_night  = as.integer(hour >= 22 | hour <= 5),
+  trip_dist = pmax(rlnorm(n, 1.2, 0.6), 0.3),
+  true_p    = plogis(-0.2 - 0.5 * is_night - 0.1 * abs(trip_dist - 4)),
+  accepted_baseline = rbinom(n, 1, true_p)
+)
+```
+
+Note: `group` does **not** appear in `true_p`. The baseline is fair.
+
+---
+
+# Inject Discrimination Two Ways
+
+```{r inject}
+# (1) Becker: drivers cancel B requests at +15% regardless of features
+riders <- riders |>
+  mutate(
+    p_becker = ifelse(group == "B", true_p * 0.85, true_p),
+    accepted_becker = rbinom(n, 1, p_becker)
+  )
+
+# (2) Phelps: race-blind algorithm uses neighborhood as a proxy
+fit_phelps <- glm(
+  accepted_baseline ~ neighborhood + is_night + trip_dist,
+  data = riders, family = binomial
+)
+riders$p_phelps <- predict(fit_phelps, type = "response")
+riders$accepted_phelps <- rbinom(n, 1, riders$p_phelps)
+```
+
+---
+
+# Same Observable Gap, Different Mechanism
+
+```{r compare, echo=FALSE}
+riders |>
+  group_by(group) |>
+  summarise(
+    Becker = round(mean(accepted_becker), 3),
+    Phelps = round(mean(accepted_phelps), 3),
+    .groups = "drop"
+  ) |>
+  knitr::kable()
+```
+
+--
+
+A naive audit ("compare acceptance rates by group") would see the same gap in both cases and call both discriminatory.
+
+---
+
+# What an Audit Sees: Marginal vs Controlled
+
+```{r audit, echo=FALSE}
+audit_marg_b <- glm(accepted_becker ~ group, data = riders, family = binomial)
+audit_marg_p <- glm(accepted_phelps ~ group, data = riders, family = binomial)
+audit_ctrl_b <- glm(accepted_becker ~ group + neighborhood + is_night + trip_dist,
+                    data = riders, family = binomial)
+audit_ctrl_p <- glm(accepted_phelps ~ group + neighborhood + is_night + trip_dist,
+                    data = riders, family = binomial)
+
+tibble(
+  Mechanism = c("Becker", "Phelps"),
+  `Marginal coef on groupB` = round(c(coef(audit_marg_b)["groupB"],
+                                       coef(audit_marg_p)["groupB"]), 3),
+  `Controlled coef on groupB` = round(c(coef(audit_ctrl_b)["groupB"],
+                                         coef(audit_ctrl_p)["groupB"]), 3)
+) |> knitr::kable()
+```
+
+--
+
+- **Becker**: controlling for features doesn't help — the gap survives
+- **Phelps**: controlling for features **eliminates** the gap, because the discrimination is *fully mediated* by neighborhood
+
+This is the empirical problem with Phelps-style proxy discrimination: **regression-based audits miss it.**
+
+---
+
+# Punchline
+
+To detect Phelps-style discrimination you need **either**:
+
+--
+
+- an **experimental audit** (Module 2 — Ge et al. 2016 style), or
+
+--
+
+- a **strong theory** of which features "should" matter (counterfactual reasoning, causal models)
+
+--
+
+Pure regression with controls won't do it. Once the discrimination is laundered through a correlated feature, the regression treats the feature as the explanation.
+
+--
+
+**This is why the empirical literature on discrimination is methodologically fraught.** The next four modules walk through the methods that try to handle it.
+
+---
+class: inverse
+
+# The Key Takeaways
+
+<br>
+
+### 1. Becker = preference-driven; Phelps = information-driven. Both happen in the wild.
+
+--
+
+<br>
+
+### 2. Ride-sharing is a clean laboratory for both: Ge et al. for Becker, the acceptance model for Phelps.
+
+--
+
+<br>
+
+### 3. Audits that control for features can miss Phelps. You need a different empirical strategy.
+
+---
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td>Theory Primer <i>(just finished)</i></td><td>✓ done</td></tr>
+<tr><td><b>2</b></td><td><b>Audit & Correspondence Studies</b></td><td>next</td></tr>
+<tr><td>3</td><td>Decomposition Methods</td><td>upcoming</td></tr>
+<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
+<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+</table>
+
+Say **"start module 2"** when ready.

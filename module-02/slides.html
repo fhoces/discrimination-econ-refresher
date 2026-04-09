@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 2: Audit &amp; Correspondence Studies</title>
+    <meta charset="utf-8" />
+    <script src="slides_files/header-attrs-2.29/header-attrs.js"></script>
+    <link href="slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slides_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Module 2: Audit &amp; Correspondence Studies
+]
+.subtitle[
+## Ge et al. (2016) and the Workhorse of the Modern Literature
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+&lt;/style&gt;
+
+
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Audit &amp; Correspondence Studies&lt;/b&gt; &lt;i&gt;(you are here)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;← current&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;Decomposition Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;Algorithmic Audits&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Modern Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+# Why Audit Studies Exist
+
+Module 1 ended with a frustration: **regression with controls cannot distinguish**
+
+&gt; "no discrimination" from "discrimination perfectly mediated by a proxy"
+
+--
+
+If race influences neighborhood and neighborhood influences acceptance, then *controlling for neighborhood* removes the very channel through which race operates.
+
+--
+
+The fix: **manufacture variation in the protected attribute** that is uncorrelated with everything else.
+
+--
+
+That's exactly what audit studies do. They are the only design that gives a clean causal estimate without strong structural assumptions.
+
+---
+
+# The Matched-Pair Audit Design
+
+1. Construct two profiles, `\(A\)` and `\(B\)`, **identical on everything observable** except the protected attribute (or its proxy)
+
+2. Submit both to the same gatekeeper (employer, driver, landlord)
+
+3. Record the decision (interview / acceptance / approval)
+
+4. Compare rates
+
+--
+
+**Identification:** the only difference between profiles is the protected attribute, so any difference in outcomes is causally attributable to it. **No controls needed** — the design handles confounding by construction.
+
+---
+
+# The Canonical Example: Bertrand-Mullainathan (2004)
+
+**Setting:** ~5,000 résumés sent in response to job postings in Boston and Chicago.
+
+--
+
+**Randomization:**
+- **Name** (white-sounding: Emily, Greg vs African-American–sounding: Lakisha, Jamal)
+- **Quality** (high vs low credentials)
+
+--
+
+**Result:** white-named résumés got **~50% more callbacks** than identical Black-named résumés.
+
+--
+
+**Bonus finding:** the "credential premium" was much larger for white-named résumés. Black candidates couldn't compensate via résumé quality.
+
+---
+
+# Ge, Knittel, MacKenzie, Zoepf (2016)
+
+The canonical ride-sharing audit study. The **centerpiece of this module**.
+
+--
+
+**Setting:** Boston and Seattle, on UberX and Lyft.
+
+**Design:** RAs created rider profiles with stereotypically white and stereotypically African-American–sounding names. They followed pre-specified routes and submitted ride requests in matched pairs.
+
+--
+
+**Sample:** ~1,500 ride requests across the two cities.
+
+**Outcomes measured:** cancellation rate, wait time, trip time, cost.
+
+---
+
+# The Headline Results
+
+| Outcome | Setting | White | African-American | Ratio |
+|---|---|---|---|---|
+| Cancellation rate | Boston, UberX, male | 4.9% | 10.1% | **~2×** |
+| Wait time | Seattle, all | baseline | +30% | longer |
+| Travel time | Boston, female | baseline | longer | (indirect routes) |
+
+--
+
+**The discrimination is large, statistically significant, and consistent across cities and profiles.**
+
+--
+
+The differences look small in absolute terms (5pp on cancellation), but for the affected riders this is a meaningfully degraded service experience.
+
+---
+
+# The Clever Bit: Seattle
+
+In Seattle, Uber **doesn't show rider names or photos** to drivers before the driver accepts the request.
+
+--
+
+The discrimination still happens. **How?**
+
+--
+
+The likely answer: drivers are using **pickup neighborhood** as a proxy for the rider's race, and the destination address (which they see after accepting) for further inference.
+
+--
+
+This is **exactly the Phelps story** from Module 1, embedded in real data:
+
+- Drivers don't see race directly
+- They use a correlated feature (location) to infer it
+- The result is racially disparate outcomes via a "race-blind" matching mechanism
+
+--
+
+This finding is what made the paper a foundational reference for the algorithmic-fairness literature that came after.
+
+---
+
+# What Audits Identify (and Don't)
+
+| Question | Audit answers? |
+|---|---|
+| Is there a *causal* effect of perceived group membership? | **Yes** |
+| Is the discrimination taste-based or statistical? | **No** |
+| Does the discrimination persist in equilibrium? | **No** |
+| Would policy X eliminate it? | **No** |
+| Is the gap "fair" by some normative criterion? | **No** |
+| What's the aggregate welfare loss? | **No** |
+
+--
+
+The right way to read an audit study: **clean documentation that the discrimination exists and is large**, *without* strong claims about mechanism or policy.
+
+---
+
+# Standard Threats to Validity
+
+**1.** The manipulation must work (gatekeeper sees what we intended)
+
+--
+
+**2.** Profiles must be matched on everything else (subtle confounders like socioeconomic inferences from names)
+
+--
+
+**3.** The sample of gatekeepers must be representative (one city ≠ the world)
+
+--
+
+**4.** The decision being measured must be the one that matters (callback ≠ hire ≠ wage)
+
+--
+
+**5.** Ethical / legal: audit studies essentially defraud the gatekeeper. IRB approval is non-trivial; some jurisdictions push back.
+
+---
+class: inverse, center, middle
+
+# Exercise
+### A Stylized Ge et al. Replication
+
+---
+
+# Setup
+
+
+```r
+set.seed(2026)
+n_rides_per_group &lt;- 500
+baseline_cancel_A &lt;- 0.05
+discrimination    &lt;- 0.05  # B sees +5pp cancellation rate
+
+audit &lt;- bind_rows(
+  tibble(profile = "A",
+         cancelled = rbinom(n_rides_per_group, 1, baseline_cancel_A)),
+  tibble(profile = "B",
+         cancelled = rbinom(n_rides_per_group, 1,
+                            baseline_cancel_A + discrimination))
+)
+
+audit |&gt;
+  group_by(profile) |&gt;
+  summarise(n = n(),
+            cancellation = round(mean(cancelled), 3),
+            .groups = "drop") |&gt;
+  knitr::kable()
+```
+
+
+
+|profile |   n| cancellation|
+|:-------|---:|------------:|
+|A       | 500|        0.040|
+|B       | 500|        0.112|
+
+---
+
+# Estimating the Audit Effect
+
+
+```r
+counts &lt;- audit |&gt;
+  group_by(profile) |&gt;
+  summarise(x = sum(cancelled), n = n(), .groups = "drop")
+
+prop_test &lt;- prop.test(x = counts$x, n = counts$n, correct = FALSE)
+gap_estimate &lt;- diff(rev(prop_test$estimate))
+ci &lt;- c(-prop_test$conf.int[2], -prop_test$conf.int[1])
+```
+
+--
+
+
+|Statistic             |Value            |
+|:---------------------|:----------------|
+|Estimated gap (B - A) |-0.072           |
+|95% CI                |[0.0395, 0.1045] |
+|p-value               |1.74e-05         |
+
+The point estimate matches the true effect (≈ 0.05), and the CI excludes zero.
+
+---
+
+# How Many Rides Do You Need? (Power Calculation)
+
+
+```r
+power_test &lt;- power.prop.test(
+  p1 = 0.05, p2 = 0.10,
+  sig.level = 0.05, power = 0.8
+)
+ceiling(power_test$n)
+```
+
+```
+## [1] 435
+```
+
+--
+
+To detect a **5 pp gap** at 80% power, you need ~470 rides **per profile**, or ~940 total.
+
+--
+
+For a more realistic **2 pp gap**:
+
+
+```
+## 2213 per group → 4426 total
+```
+
+That's why most field audit studies are **expensive** — and why algorithmic / scraped audits (Module 4) became dominant.
+
+---
+
+# Power vs Sample Size (Monte Carlo)
+
+&lt;img src="slides_files/figure-html/power-curve-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse
+
+# The Key Takeaways
+
+&lt;br&gt;
+
+### 1. Audits are the only design that gives clean causal identification of discrimination without strong structural assumptions.
+
+--
+
+&lt;br&gt;
+
+### 2. Ge et al. (2016) is the canonical ride-sharing example. Cancellation rates 2× higher for African-American riders.
+
+--
+
+&lt;br&gt;
+
+### 3. The Seattle finding showed that even "anonymized" matching produces racial disparities via correlated features — the empirical anchor for the algorithmic-fairness literature.
+
+---
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;Audit &amp; Correspondence Studies &lt;i&gt;(just finished)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Decomposition Methods (Cook et al. 2021)&lt;/b&gt;&lt;/td&gt;&lt;td&gt;next&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;Algorithmic Audits&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Modern Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+Say **"start module 3"** when ready.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
