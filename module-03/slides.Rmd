@@ -1,0 +1,346 @@
+---
+title: "Module 3: Decomposition Methods"
+subtitle: "Cook et al. (2021) and the Oaxaca-Blinder Refresh"
+output:
+  xaringan::moon_reader:
+    css: [default, default-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{css, echo=FALSE}
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, fig.align = "center",
+  fig.width = 10, fig.height = 4.2, dpi = 150,
+  message = FALSE, warning = FALSE
+)
+library(tidyverse)
+library(broom)
+theme_set(theme_minimal(base_size = 14))
+```
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td>2</td><td><a href="../module-02/slides.html">Audit & Correspondence Studies</a></td><td>✓ done</td></tr>
+<tr><td><b>3</b></td><td><b>Decomposition Methods</b> <i>(you are here)</i></td><td>← current</td></tr>
+<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
+<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+</table>
+
+---
+
+# The Problem
+
+Most of the time you can't run an audit. You have observational data and a question:
+
+> *Group A earns more than Group B. How much of that gap is discrimination?*
+
+--
+
+The literature's workhorse answer for ~50 years: **Oaxaca-Blinder decomposition**. Split the gap into:
+
+- **Explained** — different observable characteristics (experience, hours, location)
+- **Unexplained** — different *return rates* on those characteristics
+
+--
+
+Then call the unexplained piece "discrimination" — except don't, because that's wrong, and we'll see why.
+
+---
+
+# Oaxaca-Blinder, Mechanically
+
+Run a separate regression for each group:
+
+$$Y_A = \mathbf{X}_A \beta_A + u_A \qquad Y_B = \mathbf{X}_B \beta_B + u_B$$
+
+--
+
+Decompose the mean gap:
+
+$$\bar Y_A - \bar Y_B = \underbrace{(\bar{\mathbf{X}}_A - \bar{\mathbf{X}}_B)\,\hat\beta_A}_{\text{explained (endowments)}} + \underbrace{\bar{\mathbf{X}}_B (\hat\beta_A - \hat\beta_B)}_{\text{unexplained (coefficients)}}$$
+
+--
+
+**Intuition.** If group $B$ has 5 fewer years of experience and the return to experience is \$1,000/yr, then \$5,000 of the gap is "explained by experience". Whatever's left is "unexplained."
+
+---
+
+# Why "Unexplained" Is Not "Discrimination"
+
+The most important point in this module. The unexplained residual is **not** the discrimination estimate.
+
+--
+
+It is:
+- the **upper bound** on discrimination
+- **plus** the contribution of every variable you didn't include
+- **plus** any non-linearity your model misses
+- **plus** selection effects
+
+--
+
+> **Mantra:** Explained ≠ non-discriminatory. Unexplained ≠ discriminatory.
+
+---
+
+# Three Failure Modes
+
+**1. Omitted variables.** If group $B$ has lower returns to experience because of unobserved exposure to advancement opportunities, the unexplained residual contains that.
+
+--
+
+**2. Bad controls.** If you control for *occupation* in a wage gap study, you remove part of the discrimination from your estimate (because discrimination affects which occupation you end up in).
+
+--
+
+**3. The interpretation gap.** "Unexplained" is statistical. "Discrimination" is normative. Translating between them requires a theory of which differences *should* matter.
+
+---
+class: inverse, center, middle
+
+# Cook, Diamond, Hall, List & Oyer (2021)
+### *The Gender Earnings Gap in the Gig Economy*
+### Review of Economic Studies, 88(5)
+
+---
+
+# The Setting
+
+- **Data:** Uber's internal database. ~1.8M U.S. drivers, ~740M trips.
+- **Outcome:** earnings per hour
+- **Group:** male vs female drivers
+
+--
+
+**Headline result:** male drivers earn ~**7% more per hour** than female drivers. Robust across cities and time.
+
+--
+
+This is large by gig-economy standards. The whole point of the paper: *why does this exist on a platform whose algorithms are essentially gender-blind?*
+
+---
+
+# Why This Setting Is Special
+
+The usual confounders are mostly absent at Uber:
+
+--
+
+- **No taste-based discrimination by riders** — riders don't see driver gender pre-pickup in the way the platform was set up at the time
+- **No gender-aware pricing or dispatch** — the algorithm is gender-blind
+- **No negotiation** — pay is per-trip, set by the algorithm
+- **No occupation sorting** — anyone with a license and a car can sign up
+
+--
+
+So this is a **cleaner test** of decomposition than almost any traditional labor market: you're starting from a setting where the usual mechanisms don't work, and you still see a 7% gap.
+
+---
+
+# The Three Components
+
+The 7% gap decomposes into:
+
+| Component | Roughly |
+|---|---|
+| **Experience** — male drivers have more accumulated platform hours | 1/3 |
+| **Where & when** — male drivers work in higher-surge times/locations | 1/3 |
+| **Driving speed** — male drivers drive ~2.2% faster on average | 1/3 |
+
+--
+
+**Add them up: the entire 7% gap is explained.** No unexplained residual.
+
+---
+
+# The Clever Bit
+
+The paper takes an unusual position: *"the gap is fully explained, but that doesn't mean there's no problem."*
+
+--
+
+The three behavioral features are themselves products of social and structural conditions:
+
+- **Experience accumulation** correlates with the ability to commit to driving consistently — which is gendered by childcare obligations
+- **Time and place choices** correlate with safety preferences and constraints on night/weekend availability
+- **Driving speed** correlates with risk preferences, time pressure, and gendered patterns of leisure and work
+
+--
+
+So "fully explained" $\neq$ "not a problem worth addressing." The decomposition tells you the **intervention surface**, not whether to intervene.
+
+---
+
+# What an Applied Economist Should Say
+
+You will be asked some version of this in your interview:
+
+> *"Uber has a 7% gender pay gap among drivers. Is that a problem?"*
+
+--
+
+**A good answer:**
+
+1. The platform algorithms are gender-blind, so it's **not** algorithmic discrimination in the standard sense
+2. The gap is **fully decomposed** by behavioral and tenure differences (Cook et al. 2021)
+3. **The decomposition is not a license to ignore the gap** — the behavioral differences arise from social and structural conditions outside the platform
+4. The **intervention levers** would be: subsidize female drivers' experience accumulation (training/mentoring), childcare during night shifts, etc. — not algorithm changes
+5. Whether to intervene is a **normative** call, not one the decomposition can make for you
+
+---
+class: inverse, center, middle
+
+# Exercise
+### Stylized Cook et al. on Synthetic Data
+
+---
+
+# Setup
+
+```{r data-gen}
+set.seed(2026); n <- 5000
+drivers <- tibble(
+  driver_id = 1:n,
+  female    = rbinom(n, 1, 0.30),
+  experience_hrs = pmax(rnorm(n, ifelse(female, 250, 380), 100), 10),
+  surge_share    = pmin(pmax(rnorm(n, ifelse(female, 0.18, 0.27), 0.10), 0), 1),
+  speed_mph      = rnorm(n, ifelse(female, 32.5, 33.2), 3),
+  pay_per_hr     = 18 +
+                   0.012 * experience_hrs +
+                   18 * surge_share +
+                   0.40 * (speed_mph - 32) +
+                   rnorm(n, 0, 2)
+)
+```
+
+```{r show-gap, echo=FALSE}
+drivers |>
+  group_by(female) |>
+  summarise(n = n(),
+            avg_pay = round(mean(pay_per_hr), 2),
+            .groups = "drop") |>
+  knitr::kable()
+```
+
+The raw gap is about \$1.8/hr (~7% of female pay) — same as the paper.
+
+---
+
+# Oaxaca-Blinder by Hand
+
+```{r ob}
+fit_m <- lm(pay_per_hr ~ experience_hrs + surge_share + speed_mph,
+            data = drivers |> filter(female == 0))
+fit_f <- lm(pay_per_hr ~ experience_hrs + surge_share + speed_mph,
+            data = drivers |> filter(female == 1))
+
+xbar_m <- colMeans(model.matrix(fit_m))
+xbar_f <- colMeans(model.matrix(fit_f))
+
+explained   <- sum((xbar_m - xbar_f) * coef(fit_m))
+unexplained <- sum(xbar_f * (coef(fit_m) - coef(fit_f)))
+total       <- explained + unexplained
+```
+
+```{r ob-results, echo=FALSE}
+tibble(
+  Component = c("Total gap", "Explained (endowments)", "Unexplained (coefficients)"),
+  Dollars   = round(c(total, explained, unexplained), 3),
+  Pct       = round(100 * c(1, explained / total, unexplained / total), 1)
+) |> knitr::kable()
+```
+
+The entire gap is explained by the three behavioral features.
+
+---
+
+# Per-Feature Contribution
+
+```{r contribution, echo=FALSE}
+tibble(
+  feature = c("experience_hrs", "surge_share", "speed_mph"),
+  diff_in_means = c(xbar_m["experience_hrs"] - xbar_f["experience_hrs"],
+                    xbar_m["surge_share"]    - xbar_f["surge_share"],
+                    xbar_m["speed_mph"]      - xbar_f["speed_mph"]),
+  male_coef = c(coef(fit_m)["experience_hrs"],
+                coef(fit_m)["surge_share"],
+                coef(fit_m)["speed_mph"]),
+  contribution = NA_real_
+) |>
+  mutate(contribution = round(diff_in_means * male_coef, 3),
+         pct_of_gap   = round(100 * contribution / sum(contribution), 1)) |>
+  knitr::kable()
+```
+
+--
+
+Each of the three features contributes a meaningful share of the gap. The pattern matches Cook et al. (2021): roughly equal contributions from experience, surge work, and speed.
+
+---
+
+# The Bad-Controls Trap
+
+What if you add a control that's *downstream* of the discriminatory mechanism?
+
+```{r bad-control}
+drivers <- drivers |>
+  mutate(preferred_shifts = pmax(rnorm(n, ifelse(female, 8, 14), 4), 0))
+
+coef(lm(pay_per_hr ~ female + experience_hrs + surge_share + speed_mph,
+        data = drivers))["female"]
+coef(lm(pay_per_hr ~ female + experience_hrs + surge_share + speed_mph + preferred_shifts,
+        data = drivers))["female"]
+```
+
+--
+
+Adding `preferred_shifts` shrinks the coefficient on `female`. **But it's a bad control** — it's downstream of the gendered constraints on when drivers can work, so absorbing it just hides the mechanism.
+
+---
+class: inverse
+
+# The Key Takeaways
+
+<br>
+
+### 1. Oaxaca-Blinder gives you the *intervention surface*. It does not tell you whether to intervene.
+
+--
+
+<br>
+
+### 2. Cook et al. (2021) shows the entire 7% Uber gender pay gap is explained by experience + surge work + driving speed.
+
+--
+
+<br>
+
+### 3. "Fully explained" ≠ "no problem worth addressing." The behavioral features themselves are social facts.
+
+---
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td>2</td><td><a href="../module-02/slides.html">Audit & Correspondence Studies</a></td><td>✓ done</td></tr>
+<tr><td>3</td><td>Decomposition Methods <i>(just finished)</i></td><td>✓ done</td></tr>
+<tr><td><b>4</b></td><td><b>Algorithmic Audits</b></td><td>next</td></tr>
+<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+</table>
+
+Say **"start module 4"** when ready.

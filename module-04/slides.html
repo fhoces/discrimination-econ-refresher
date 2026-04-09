@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 4: Algorithmic Audits</title>
+    <meta charset="utf-8" />
+    <script src="slides_files/header-attrs-2.29/header-attrs.js"></script>
+    <link href="slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slides_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Module 4: Algorithmic Audits
+]
+.subtitle[
+## Pandey-Caliskan, Chen-Mislove-Wilson, and How to Audit a Black-Box Pricing System
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+&lt;/style&gt;
+
+
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;&lt;a href="../module-02/slides.html"&gt;Audit &amp; Correspondence Studies&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;&lt;a href="../module-03/slides.html"&gt;Decomposition Methods&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Algorithmic Audits&lt;/b&gt; &lt;i&gt;(you are here)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;← current&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Modern Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+# A New Kind of Gatekeeper
+
+The audit studies in Module 2 targeted **people**. The decomposition in Module 3 looked at **observational gaps**. This module is about auditing **algorithms**.
+
+--
+
+The algorithm is now the gatekeeper. It sets prices, dispatches drivers, matches riders, suggests pay rates. You can audit it from the outside (scraped data) or the inside (full access + the ability to ship fixes).
+
+--
+
+Two key papers for this module:
+- **Pandey &amp; Caliskan (2021)** — disparate impact in Chicago ride-hail pricing
+- **Chen, Mislove &amp; Wilson (2015)** — *Peeking Beneath the Hood of Uber*, the methodological template
+
+---
+
+# What's Different About Algorithmic Audits
+
+**1. The "manipulation" is querying the system, not deceiving a person.** No fraud, no IRB headache.
+
+--
+
+**2. You can run *millions* of queries.** Pandey-Caliskan analyze ~100M Chicago trips.
+
+--
+
+**3. The "matched pair" is a counterfactual query.** "What would the algorithm have done if everything were the same except this one feature?"
+
+--
+
+**The catch:** you don't usually *control* the inputs. You observe what real users get. So you're back in regression-and-controls territory, with all the bad-controls problems that implies.
+
+---
+
+# Pandey &amp; Caliskan (2021)
+
+**Title:** *Disparate Impact of AI Bias in Ridehailing Economy's Price Discrimination Algorithms*
+
+**Setting:** Chicago. The city publishes anonymized trip data: fare, distance, duration, pickup/dropoff census tracts.
+
+--
+
+**Audit question:** *Are pickup or dropoff areas with higher minority populations charged more per mile for equivalent trips?*
+
+--
+
+**Method (shadow audit):**
+1. Compute fare-per-mile per trip
+2. Merge trips with census-tract demographics
+3. Regress fare-per-mile on demographic features, controlling for trip observables
+
+--
+
+**Result:** Trips with pickup or dropoff in higher-minority census tracts have **higher fare-per-mile**, even after controls.
+
+---
+
+# The Implicit Mechanism
+
+Uber's surge-pricing algorithm uses real-time supply/demand signals. **The algorithm never reads "race."** But:
+
+--
+
+- In neighborhoods with thinner driver supply, prices surge more often
+
+--
+
+- Driver supply is correlated with neighborhood demographics (historical patterns + current urban form)
+
+--
+
+- So the surge signal is correlated with race even though the algorithm is race-blind
+
+--
+
+This is **statistical discrimination by an algorithm**, mediated by a proxy. **Phelps's model running in real time.**
+
+---
+
+# What Pandey-Caliskan Identifies (and Doesn't)
+
+| What | Yes? |
+|---|---|
+| Correlation between demographics and price-per-mile | **Yes** |
+| Documented disparate impact | **Yes** |
+| Causal mechanism | **No** |
+| Policy fix | **No** |
+
+--
+
+The paper produces a quantitative claim that can be debated by regulators. That's its job. It is not the final word on whether the algorithm is "discriminatory" — that's a normative call.
+
+---
+
+# Chen, Mislove &amp; Wilson (2015)
+
+**Title:** *Peeking Beneath the Hood of Uber* (IMC '15)
+
+The original surge-pricing audit. Not about discrimination per se, but the **methodology** is the template for everything that followed.
+
+--
+
+**The setup:**
+- Built a measurement infrastructure around Uber's app
+- Polled surge multipliers and driver counts at hundreds of locations every few seconds, for weeks
+- Recorded the spatial structure of surge
+
+--
+
+**Findings:**
+- Surge cells are tiny (~0.5 km × 0.5 km)
+- Surge changes rapidly (5–10 min durations)
+- Surge increases supply only marginally — most rebalancing comes from rider cancellations
+
+--
+
+**Methodological contribution:** *you can audit a black-box pricing system using only the public-facing API*. Subsequent algorithmic audits have all built on this template.
+
+---
+
+# How to Audit a Pricing Algorithm: 4 Steps
+
+**Step 1.** Define the disparate-impact question precisely. *Whose price? Per what? Conditional on what? Compared to what?*
+
+--
+
+**Step 2.** Pick the data source. Internal (trip log + dispatch log + linked Census) or external (scraped surge / public city data).
+
+--
+
+**Step 3.** Pick the comparison.
+- Within-trip counterfactual ("if this trip were in a different neighborhood")
+- Within-rider FE
+- Cross-sectional regression (Pandey-Caliskan style)
+
+--
+
+**Step 4.** Report carefully. Point estimate + SE + robustness + power + interpretation. Honest reports always include all five.
+
+---
+
+# External vs Internal Audits
+
+| | External | Internal |
+|---|---|---|
+| Sample | Small, biased | Universe of decisions |
+| Variables | Public observables | Everything the system uses |
+| Counterfactuals | Hard (need a model) | Easy (run an A/B test) |
+| Reportability | Free to publish | Constrained |
+| Can ship fixes? | No | Yes |
+
+--
+
+The interesting move for an **internal economist**: bring the external auditor's questions in-house and run them on the full data with the ability to ship the fix.
+
+---
+class: inverse, center, middle
+
+# Exercise
+### Stylized Surge-Pricing Audit
+
+---
+
+# Setup: 30 Neighborhoods, Different Demographics
+
+
+```r
+set.seed(2026)
+n_nbhd &lt;- 30
+city &lt;- tibble(
+  neighborhood  = paste0("N", sprintf("%02d", 1:n_nbhd)),
+  pct_minority  = runif(n_nbhd, 0.05, 0.90),
+  driver_supply = pmax(8 - 6 * pct_minority + rnorm(n_nbhd, 0, 0.5), 0.5),
+  demand        = rnorm(n_nbhd, 10, 1.5)
+) |&gt;
+  mutate(
+    surge_multiplier = pmax(1, demand / driver_supply),
+    fare_per_mile    = 1.50 * surge_multiplier
+  )
+```
+
+The pricing rule is `pmax(1, demand/supply)`. **Race is not in this formula.** But supply correlates with race because of how the city is set up.
+
+---
+
+# The Audit Regression
+
+
+```r
+audit_fit &lt;- lm(fare_per_mile ~ pct_minority, data = city)
+```
+
+
+|term         | estimate| std.error| statistic| p.value|
+|:------------|--------:|---------:|---------:|-------:|
+|(Intercept)  |   1.4639|    0.1538|    9.5192|       0|
+|pct_minority |   3.2702|    0.3818|    8.5646|       0|
+
+--
+
+Significant positive coefficient on `pct_minority` despite the algorithm never seeing race — the disparate impact is mediated entirely through the supply channel.
+
+---
+
+# The Bad-Controls Trap (Again)
+
+
+```r
+audit_ctrl &lt;- lm(fare_per_mile ~ pct_minority + driver_supply, data = city)
+```
+
+
+|term          | estimate| std.error| statistic| p.value|
+|:-------------|--------:|---------:|---------:|-------:|
+|(Intercept)   |   6.7962|    1.0641|    6.3871|  0.0000|
+|pct_minority  |  -0.6735|    0.8309|   -0.8107|  0.4246|
+|driver_supply |  -0.6583|    0.1306|   -5.0395|  0.0000|
+
+--
+
+Adding `driver_supply` as a control kills the demographic coefficient — *because driver_supply is the mechanism*. The controlled regression hides the disparate impact instead of explaining it.
+
+---
+
+# Two Policy Fixes
+
+
+|Policy            | DI ratio (high/low)| Total revenue|
+|:-----------------|-------------------:|-------------:|
+|Surge as-is       |               1.465|         769.9|
+|Cap surge at 1.5× |               1.138|         613.5|
+|No surge at all   |               1.000|         438.0|
+
+--
+
+Closing the disparate-impact gap costs revenue. The math draws the curve; **humans pick the point**.
+
+---
+class: inverse
+
+# The Key Takeaways
+
+&lt;br&gt;
+
+### 1. Algorithmic audits can be run at scale, on real data, with low ethical cost — they are the dominant modern methodology.
+
+--
+
+&lt;br&gt;
+
+### 2. Pandey-Caliskan documents disparate impact in ride-hail pricing without claiming a causal mechanism.
+
+--
+
+&lt;br&gt;
+
+### 3. The bad-controls problem follows you into the algorithmic world: regressions with mediator controls hide the very mechanism you're trying to find.
+
+---
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;&lt;a href="../module-02/slides.html"&gt;Audit &amp; Correspondence Studies&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;&lt;a href="../module-03/slides.html"&gt;Decomposition Methods&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;Algorithmic Audits &lt;i&gt;(just finished)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Modern Methods &amp; Practitioner&lt;/b&gt;&lt;/td&gt;&lt;td&gt;next&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+Say **"start module 5"** when ready.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

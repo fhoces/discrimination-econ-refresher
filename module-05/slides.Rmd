@@ -1,0 +1,331 @@
+---
+title: "Module 5: Modern Methods & The Practitioner Question"
+subtitle: "Causal ML, the Bridge to ML Fairness, and What an Internal Economist Actually Does"
+output:
+  xaringan::moon_reader:
+    css: [default, default-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{css, echo=FALSE}
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, fig.align = "center",
+  fig.width = 10, fig.height = 4.2, dpi = 150,
+  message = FALSE, warning = FALSE
+)
+library(tidyverse)
+theme_set(theme_minimal(base_size = 14))
+```
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td>2</td><td><a href="../module-02/slides.html">Audit & Correspondence Studies</a></td><td>✓ done</td></tr>
+<tr><td>3</td><td><a href="../module-03/slides.html">Decomposition Methods</a></td><td>✓ done</td></tr>
+<tr><td>4</td><td><a href="../module-04/slides.html">Algorithmic Audits</a></td><td>✓ done</td></tr>
+<tr><td><b>5</b></td><td><b>Modern Methods & Practitioner</b> <i>(you are here)</i></td><td>← current</td></tr>
+</table>
+
+---
+
+# Where We Are
+
+After four modules, you have the four core empirical tools:
+
+| Tool | Strength | Weakness |
+|---|---|---|
+| Theory (Becker, Phelps) | Tells you what mechanism to look for | Can't measure anything |
+| Audit studies | Clean causal identification | Expensive, narrow |
+| Decomposition | Cheap, observational | "Explained" ≠ "non-discriminatory" |
+| Algorithmic audits | Scalable, low cost | Bad-controls problem |
+
+--
+
+This last module ties them together and answers: **if you walk into Uber tomorrow as a policy economist, what do you actually do?**
+
+---
+class: inverse, center, middle
+
+# Part 1
+## The Bridge to ML Fairness
+
+---
+
+# Same Thing, Two Vocabularies
+
+The labor-econ literature on discrimination and the CS literature on algorithmic fairness are about **the same questions**. Once you map the vocabularies you can read both.
+
+| Labor econ | ML fairness |
+|---|---|
+| Becker (taste-based) | Direct discrimination |
+| Phelps (statistical) | Disparate impact via proxy |
+| Audit study | Counterfactual fairness |
+| Decomposition | Conditional independence |
+| Equal positive rates | Demographic parity |
+| Equal error rates | Equalized odds |
+| Equal precision | Predictive parity |
+| Disparate impact ratio | The 80% rule |
+
+--
+
+**Practical implication:** read both literatures. Economists are better on identification + interpretation; computer scientists are better on computation + impossibility results. Each has blind spots about the other.
+
+---
+class: inverse, center, middle
+
+# Part 2
+## Causal ML for Discrimination
+
+---
+
+# Why Causal ML
+
+Traditional regression has two problems for discrimination measurement:
+
+1. You have to specify the functional form
+2. You have to choose controls (and run into bad-controls)
+
+--
+
+**Causal ML** (Chernozhukov et al. 2018, Athey & Imbens 2019) gives you tools that:
+
+- Use ML methods to flexibly fit nuisance functions (response, propensity)
+- Are *robust* to misspecification of either piece
+- Produce intervention-relevant estimates with valid SEs
+
+--
+
+The two methods you should know by name: **Doubly-robust estimation (DML)** and **Causal forests**.
+
+---
+
+# Doubly-Robust Estimation, in One Slide
+
+Two models:
+
+- $m(X) = P(T = 1 \mid X)$ — the propensity model
+- $\mu_t(X) = \mathbb{E}[Y \mid T = t, X]$ — the response model
+
+--
+
+The AIPW (Augmented Inverse Probability Weighting) estimator combines them:
+
+$$\hat\tau_{AIPW} = \frac{1}{n}\sum_i \left[\frac{T_i Y_i}{m(X_i)} - \frac{(1-T_i)Y_i}{1 - m(X_i)} + (\mu_1(X_i) - \mu_0(X_i)) - \cdots\right]$$
+
+--
+
+**Why "doubly robust":** consistent if **either** $m$ or $\mu$ is correctly specified. Use ML for both → much less specification anxiety than OLS-with-controls.
+
+--
+
+**For discrimination:** lets you measure the effect of group membership on an outcome with many controls, without the bad-controls problem.
+
+---
+
+# Causal Forests
+
+Athey & Imbens (2016, 2019). Random-forest variant trained to estimate **heterogeneous** treatment effects.
+
+--
+
+For discrimination measurement:
+
+- Don't just ask *"is there discrimination on average?"*
+- Ask *"is there discrimination, and how does it vary across subgroups?"*
+
+--
+
+Useful when the answer to "is the algorithm discriminating?" is *"yes for some users, no for others, and the variation is interesting in itself."*
+
+---
+class: inverse, center, middle
+
+# Part 3
+## The Practitioner Question
+
+---
+
+# A Regulator Walks In
+
+You're a policy economist at Uber. The Chicago Transportation Department sends a letter:
+
+> *"Is your algorithm discriminating against protected groups?"*
+
+What do you do?
+
+---
+
+# Step 1: Translate the Question
+
+The regulator's question is normative-shaped but technical-shaped. You convert it to one or more answerable empirical questions:
+
+--
+
+- Does the algorithm produce predictions that vary by the protected attribute, conditional on legitimate features?
+
+--
+
+- Does the algorithm produce predictions that would change if the protected attribute were changed and nothing else were?
+
+--
+
+- Does the algorithm produce error rates that vary across groups?
+
+--
+
+- Does a positive prediction mean the same thing across groups?
+
+--
+
+These are **different questions with different answers**. The regulator usually doesn't know which one they want. **Your first job is to make them choose.**
+
+---
+
+# Step 2: Run the Audit
+
+Once you have the question, the audit is mechanical.
+
+- Pull the data
+- Compute the metric
+- Per-group breakdown
+- Robustness checks
+
+--
+
+The technical work is the **easy** part.
+
+---
+
+# Step 3: Frame the Result
+
+The result is a number. The framing is the policy story.
+
+A good framing always includes:
+
+--
+
+- The **mechanism**, even if speculative
+
+--
+
+- The **counterfactual**: what would the algorithm look like without the discrimination? What would that cost?
+
+--
+
+- The **upstream causes** (e.g., historical patterns of urban form)
+
+--
+
+- The **policy levers** the platform can actually pull
+
+---
+
+# Step 4: Manage the Disclosure
+
+Internal audits have a problem: the platform's lawyers don't want them published.
+
+--
+
+Your job: find the version of the result that
+
+- Is true
+- Is defensible
+- Doesn't expose the company beyond the actual finding
+- Can be sent to the regulator without surprises
+
+--
+
+This is a real skill that matters more than the technical analysis. The people who succeed in this role are the ones who can write a 2-page memo that survives review by **Legal, Comms, Product, and Engineering** — *and* tells the truth.
+
+---
+
+# A Memo Template
+
+```
+TO:    [Director of Policy / VP Pricing / Legal]
+FROM:  [Policy Economist team]
+RE:    Disparate impact audit of surge pricing
+
+QUESTION
+DATA
+METHOD
+RESULTS
+INTERPRETATION
+POLICY OPTIONS
+RECOMMENDATION
+CAVEATS
+```
+
+--
+
+Skip any of these eight sections and the memo will be sent back. The full template is in the Module 5 exercise file.
+
+---
+
+# Three Things to Know for the Interview
+
+**1.** The empirical literature on ride-sharing discrimination is small but active. You should be able to name and discuss:
+  - Ge et al. (2016) — audit
+  - Cook et al. (2021) — decomposition
+  - Pandey-Caliskan (2021) — algorithmic audit
+  - Chen-Mislove-Wilson (2015) — methodology template
+
+--
+
+**2.** The methodological debate is about **which questions** count, not **which methods** work.
+
+--
+
+**3.** The internal economist is a **translation role**. You translate between regulators, lawyers, researchers, product managers, and engineers. The technical work is necessary but not sufficient.
+
+---
+class: inverse
+
+# The Course in One Slide
+
+<br>
+
+### Becker and Phelps gave us the theory in 1957 and 1972.
+
+--
+
+### Audits gave us causal identification in the 1990s and 2000s.
+
+--
+
+### Decomposition gives us observational measurement, with caveats.
+
+--
+
+### Algorithmic audits give us scale, with bad-controls problems.
+
+--
+
+### Causal ML and the practitioner playbook tie them together for the policy economist who has to deliver an answer to a regulator on Monday morning.
+
+---
+
+# Course Map
+
+<table>
+<tr><th>#</th><th>Module</th><th>Status</th></tr>
+<tr><td>1</td><td><a href="../module-01/slides.html">Theory Primer</a></td><td>✓ done</td></tr>
+<tr><td>2</td><td><a href="../module-02/slides.html">Audit & Correspondence Studies</a></td><td>✓ done</td></tr>
+<tr><td>3</td><td><a href="../module-03/slides.html">Decomposition Methods</a></td><td>✓ done</td></tr>
+<tr><td>4</td><td><a href="../module-04/slides.html">Algorithmic Audits</a></td><td>✓ done</td></tr>
+<tr><td>5</td><td>Modern Methods & Practitioner <i>(just finished)</i></td><td>✓ done</td></tr>
+</table>
+
+**You're done with the discrimination refresher.** The companion course is the [ML Discrimination Refresher](https://github.com/fhoces/ml-discrimination-refresher).

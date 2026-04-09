@@ -44,9 +44,9 @@ The exercises depend on `tidyverse`, `broom`, and base R. Install with
 |---|--------|----------|-------------|
 | **1** | [Theory Primer](module-01/) | Becker (taste-based), Phelps (statistical), Coate-Loury self-fulfilling equilibria | Two indistinguishable acceptance gaps in Uber data |
 | **2** | [Audit & Correspondence Studies](module-02/) | Matched-pair designs, Bertrand-Mullainathan, threats to validity | Ge, Knittel, MacKenzie & Zoepf (2016) — the Uber/Lyft audit |
-| 3 | Decomposition Methods | Oaxaca-Blinder, "explained" vs "unexplained" gaps | Cook, Diamond, Hall, List & Oyer (2021) — Uber driver gender pay gap |
-| 4 | Algorithmic Audits | Shadow audits, scraped audits, internal A/B audits | Pandey-Caliskan (2021), Chen-Mislove-Wilson (2015) |
-| 5 | Modern Methods & Practitioner | Causal ML, the bridge to ML fairness, the internal-economist role | Auditing pricing/dispatch from inside a TNC |
+| **3** | [Decomposition Methods](module-03/) | Oaxaca-Blinder, "explained" vs "unexplained" gaps | Cook, Diamond, Hall, List & Oyer (2021) — Uber driver gender pay gap |
+| **4** | [Algorithmic Audits](module-04/) | Shadow audits, scraped audits, internal A/B audits | Pandey-Caliskan (2021), Chen-Mislove-Wilson (2015) |
+| **5** | [Modern Methods & Practitioner](module-05/) | Causal ML, the bridge to ML fairness, the internal-economist role | Auditing pricing/dispatch from inside a TNC |
 
 ## Key papers
 

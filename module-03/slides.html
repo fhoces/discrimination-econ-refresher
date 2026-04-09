@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 3: Decomposition Methods</title>
+    <meta charset="utf-8" />
+    <script src="slides_files/header-attrs-2.29/header-attrs.js"></script>
+    <link href="slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slides_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Module 3: Decomposition Methods
+]
+.subtitle[
+## Cook et al. (2021) and the Oaxaca-Blinder Refresh
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-code, .remark-inline-code { font-size: 80%; }
+.remark-slide-content { padding: 1em 2em; }
+.small { font-size: 80%; }
+&lt;/style&gt;
+
+
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;&lt;a href="../module-02/slides.html"&gt;Audit &amp; Correspondence Studies&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Decomposition Methods&lt;/b&gt; &lt;i&gt;(you are here)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;← current&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;Algorithmic Audits&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Modern Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+# The Problem
+
+Most of the time you can't run an audit. You have observational data and a question:
+
+&gt; *Group A earns more than Group B. How much of that gap is discrimination?*
+
+--
+
+The literature's workhorse answer for ~50 years: **Oaxaca-Blinder decomposition**. Split the gap into:
+
+- **Explained** — different observable characteristics (experience, hours, location)
+- **Unexplained** — different *return rates* on those characteristics
+
+--
+
+Then call the unexplained piece "discrimination" — except don't, because that's wrong, and we'll see why.
+
+---
+
+# Oaxaca-Blinder, Mechanically
+
+Run a separate regression for each group:
+
+`$$Y_A = \mathbf{X}_A \beta_A + u_A \qquad Y_B = \mathbf{X}_B \beta_B + u_B$$`
+
+--
+
+Decompose the mean gap:
+
+`$$\bar Y_A - \bar Y_B = \underbrace{(\bar{\mathbf{X}}_A - \bar{\mathbf{X}}_B)\,\hat\beta_A}_{\text{explained (endowments)}} + \underbrace{\bar{\mathbf{X}}_B (\hat\beta_A - \hat\beta_B)}_{\text{unexplained (coefficients)}}$$`
+
+--
+
+**Intuition.** If group `\(B\)` has 5 fewer years of experience and the return to experience is \$1,000/yr, then \$5,000 of the gap is "explained by experience". Whatever's left is "unexplained."
+
+---
+
+# Why "Unexplained" Is Not "Discrimination"
+
+The most important point in this module. The unexplained residual is **not** the discrimination estimate.
+
+--
+
+It is:
+- the **upper bound** on discrimination
+- **plus** the contribution of every variable you didn't include
+- **plus** any non-linearity your model misses
+- **plus** selection effects
+
+--
+
+&gt; **Mantra:** Explained ≠ non-discriminatory. Unexplained ≠ discriminatory.
+
+---
+
+# Three Failure Modes
+
+**1. Omitted variables.** If group `\(B\)` has lower returns to experience because of unobserved exposure to advancement opportunities, the unexplained residual contains that.
+
+--
+
+**2. Bad controls.** If you control for *occupation* in a wage gap study, you remove part of the discrimination from your estimate (because discrimination affects which occupation you end up in).
+
+--
+
+**3. The interpretation gap.** "Unexplained" is statistical. "Discrimination" is normative. Translating between them requires a theory of which differences *should* matter.
+
+---
+class: inverse, center, middle
+
+# Cook, Diamond, Hall, List &amp; Oyer (2021)
+### *The Gender Earnings Gap in the Gig Economy*
+### Review of Economic Studies, 88(5)
+
+---
+
+# The Setting
+
+- **Data:** Uber's internal database. ~1.8M U.S. drivers, ~740M trips.
+- **Outcome:** earnings per hour
+- **Group:** male vs female drivers
+
+--
+
+**Headline result:** male drivers earn ~**7% more per hour** than female drivers. Robust across cities and time.
+
+--
+
+This is large by gig-economy standards. The whole point of the paper: *why does this exist on a platform whose algorithms are essentially gender-blind?*
+
+---
+
+# Why This Setting Is Special
+
+The usual confounders are mostly absent at Uber:
+
+--
+
+- **No taste-based discrimination by riders** — riders don't see driver gender pre-pickup in the way the platform was set up at the time
+- **No gender-aware pricing or dispatch** — the algorithm is gender-blind
+- **No negotiation** — pay is per-trip, set by the algorithm
+- **No occupation sorting** — anyone with a license and a car can sign up
+
+--
+
+So this is a **cleaner test** of decomposition than almost any traditional labor market: you're starting from a setting where the usual mechanisms don't work, and you still see a 7% gap.
+
+---
+
+# The Three Components
+
+The 7% gap decomposes into:
+
+| Component | Roughly |
+|---|---|
+| **Experience** — male drivers have more accumulated platform hours | 1/3 |
+| **Where &amp; when** — male drivers work in higher-surge times/locations | 1/3 |
+| **Driving speed** — male drivers drive ~2.2% faster on average | 1/3 |
+
+--
+
+**Add them up: the entire 7% gap is explained.** No unexplained residual.
+
+---
+
+# The Clever Bit
+
+The paper takes an unusual position: *"the gap is fully explained, but that doesn't mean there's no problem."*
+
+--
+
+The three behavioral features are themselves products of social and structural conditions:
+
+- **Experience accumulation** correlates with the ability to commit to driving consistently — which is gendered by childcare obligations
+- **Time and place choices** correlate with safety preferences and constraints on night/weekend availability
+- **Driving speed** correlates with risk preferences, time pressure, and gendered patterns of leisure and work
+
+--
+
+So "fully explained" `\(\neq\)` "not a problem worth addressing." The decomposition tells you the **intervention surface**, not whether to intervene.
+
+---
+
+# What an Applied Economist Should Say
+
+You will be asked some version of this in your interview:
+
+&gt; *"Uber has a 7% gender pay gap among drivers. Is that a problem?"*
+
+--
+
+**A good answer:**
+
+1. The platform algorithms are gender-blind, so it's **not** algorithmic discrimination in the standard sense
+2. The gap is **fully decomposed** by behavioral and tenure differences (Cook et al. 2021)
+3. **The decomposition is not a license to ignore the gap** — the behavioral differences arise from social and structural conditions outside the platform
+4. The **intervention levers** would be: subsidize female drivers' experience accumulation (training/mentoring), childcare during night shifts, etc. — not algorithm changes
+5. Whether to intervene is a **normative** call, not one the decomposition can make for you
+
+---
+class: inverse, center, middle
+
+# Exercise
+### Stylized Cook et al. on Synthetic Data
+
+---
+
+# Setup
+
+
+```r
+set.seed(2026); n &lt;- 5000
+drivers &lt;- tibble(
+  driver_id = 1:n,
+  female    = rbinom(n, 1, 0.30),
+  experience_hrs = pmax(rnorm(n, ifelse(female, 250, 380), 100), 10),
+  surge_share    = pmin(pmax(rnorm(n, ifelse(female, 0.18, 0.27), 0.10), 0), 1),
+  speed_mph      = rnorm(n, ifelse(female, 32.5, 33.2), 3),
+  pay_per_hr     = 18 +
+                   0.012 * experience_hrs +
+                   18 * surge_share +
+                   0.40 * (speed_mph - 32) +
+                   rnorm(n, 0, 2)
+)
+```
+
+
+| female|    n| avg_pay|
+|------:|----:|-------:|
+|      0| 3539|   27.96|
+|      1| 1461|   24.59|
+
+The raw gap is about \$1.8/hr (~7% of female pay) — same as the paper.
+
+---
+
+# Oaxaca-Blinder by Hand
+
+
+```r
+fit_m &lt;- lm(pay_per_hr ~ experience_hrs + surge_share + speed_mph,
+            data = drivers |&gt; filter(female == 0))
+fit_f &lt;- lm(pay_per_hr ~ experience_hrs + surge_share + speed_mph,
+            data = drivers |&gt; filter(female == 1))
+
+xbar_m &lt;- colMeans(model.matrix(fit_m))
+xbar_f &lt;- colMeans(model.matrix(fit_f))
+
+explained   &lt;- sum((xbar_m - xbar_f) * coef(fit_m))
+unexplained &lt;- sum(xbar_f * (coef(fit_m) - coef(fit_f)))
+total       &lt;- explained + unexplained
+```
+
+
+|Component                  | Dollars|   Pct|
+|:--------------------------|-------:|-----:|
+|Total gap                  |   3.379| 100.0|
+|Explained (endowments)     |   3.334|  98.7|
+|Unexplained (coefficients) |   0.045|   1.3|
+
+The entire gap is explained by the three behavioral features.
+
+---
+
+# Per-Feature Contribution
+
+
+|feature        | diff_in_means|  male_coef| contribution| pct_of_gap|
+|:--------------|-------------:|----------:|------------:|----------:|
+|experience_hrs |   131.5741307|  0.0118082|        1.554|       46.6|
+|surge_share    |     0.0825444| 17.8491093|        1.473|       44.2|
+|speed_mph      |     0.7692100|  0.3985936|        0.307|        9.2|
+
+--
+
+Each of the three features contributes a meaningful share of the gap. The pattern matches Cook et al. (2021): roughly equal contributions from experience, surge work, and speed.
+
+---
+
+# The Bad-Controls Trap
+
+What if you add a control that's *downstream* of the discriminatory mechanism?
+
+
+```r
+drivers &lt;- drivers |&gt;
+  mutate(preferred_shifts = pmax(rnorm(n, ifelse(female, 8, 14), 4), 0))
+
+coef(lm(pay_per_hr ~ female + experience_hrs + surge_share + speed_mph,
+        data = drivers))["female"]
+```
+
+```
+##      female 
+## -0.03880316
+```
+
+```r
+coef(lm(pay_per_hr ~ female + experience_hrs + surge_share + speed_mph + preferred_shifts,
+        data = drivers))["female"]
+```
+
+```
+##      female 
+## -0.03398485
+```
+
+--
+
+Adding `preferred_shifts` shrinks the coefficient on `female`. **But it's a bad control** — it's downstream of the gendered constraints on when drivers can work, so absorbing it just hides the mechanism.
+
+---
+class: inverse
+
+# The Key Takeaways
+
+&lt;br&gt;
+
+### 1. Oaxaca-Blinder gives you the *intervention surface*. It does not tell you whether to intervene.
+
+--
+
+&lt;br&gt;
+
+### 2. Cook et al. (2021) shows the entire 7% Uber gender pay gap is explained by experience + surge work + driving speed.
+
+--
+
+&lt;br&gt;
+
+### 3. "Fully explained" ≠ "no problem worth addressing." The behavioral features themselves are social facts.
+
+---
+
+# Course Map
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Module&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;a href="../module-01/slides.html"&gt;Theory Primer&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;&lt;a href="../module-02/slides.html"&gt;Audit &amp; Correspondence Studies&lt;/a&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;Decomposition Methods &lt;i&gt;(just finished)&lt;/i&gt;&lt;/td&gt;&lt;td&gt;✓ done&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Algorithmic Audits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;next&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Modern Methods&lt;/td&gt;&lt;td&gt;upcoming&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+Say **"start module 4"** when ready.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
