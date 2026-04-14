@@ -13,8 +13,8 @@ literature:
 | Algorithmic audits | 4 | Scalable, low cost | Bad-controls problem; correlation only |
 
 This last module ties them together and answers the practitioner question:
-**if you walk into Uber tomorrow as a policy economist, what do you actually
-do?**
+**if you walk into a tech platform tomorrow as a policy economist, what do
+you actually do?**
 
 We cover three things:
 
@@ -123,8 +123,9 @@ Two practical reasons:
 
 ## The Practitioner Question
 
-You walk into Uber as a policy economist. A regulator sends you a
-letter: "Is your algorithm discriminating against protected groups?"
+You walk into a ride-sharing platform as a policy economist. A regulator
+sends you a letter: "Is your algorithm discriminating against protected
+groups?"
 
 What do you actually do?
 

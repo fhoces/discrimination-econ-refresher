@@ -175,8 +175,8 @@ ad-hoc HTTP scraping.
 
 ## How to Audit a Black-Box Pricing Algorithm
 
-If you walk into an Uber interview and they ask "how would you audit our
-pricing algorithm for disparate impact," here's the answer.
+If an interviewer asks "how would you audit a pricing algorithm for
+disparate impact," here's the answer.
 
 ### Step 1: define the disparate-impact question precisely
 

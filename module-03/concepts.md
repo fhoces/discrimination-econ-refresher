@@ -114,7 +114,7 @@ question Oaxaca-Blinder doesn't answer.
 ## Cook, Diamond, Hall, List & Oyer (2021)
 
 This is the centerpiece of the module and the single most relevant paper
-for an applied policy economist working at Uber.
+for an applied policy economist at a ride-sharing platform.
 
 **Title:** *The Gender Earnings Gap in the Gig Economy: Evidence from
 over a Million Rideshare Drivers*
