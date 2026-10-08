@@ -31,11 +31,11 @@ theme_set(theme_minimal(base_size = 14))
 
 <table>
 <tr><th>#</th><th>Module</th><th>Status</th></tr>
-<tr><td><b>1</b></td><td><b>Theory Primer: Becker + Phelps</b> <i>(you are here)</i></td><td>← current</td></tr>
-<tr><td>2</td><td>Audit & Correspondence Studies</td><td>upcoming</td></tr>
-<tr><td>3</td><td>Decomposition Methods (Cook et al. 2021)</td><td>upcoming</td></tr>
-<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
-<tr><td>5</td><td>Modern Methods & The Practitioner Question</td><td>upcoming</td></tr>
+<tr><td><b>1</b></td><td><b>Theory Primer</b> <i>(you are here)</i></td><td>← current</td></tr>
+<tr><td>2</td><td><a href="../module-02/slides.html">Audit & Correspondence Studies</a></td><td>✓ done</td></tr>
+<tr><td>3</td><td><a href="../module-03/slides.html">Decomposition Methods</a></td><td>✓ done</td></tr>
+<tr><td>4</td><td><a href="../module-04/slides.html">Algorithmic Audits</a></td><td>✓ done</td></tr>
+<tr><td>5</td><td><a href="../module-05/slides.html">Modern Methods & Practitioner</a></td><td>✓ done</td></tr>
 </table>
 
 ---
@@ -413,10 +413,10 @@ class: inverse
 <table>
 <tr><th>#</th><th>Module</th><th>Status</th></tr>
 <tr><td>1</td><td>Theory Primer <i>(just finished)</i></td><td>✓ done</td></tr>
-<tr><td><b>2</b></td><td><b>Audit & Correspondence Studies</b></td><td>next</td></tr>
-<tr><td>3</td><td>Decomposition Methods</td><td>upcoming</td></tr>
-<tr><td>4</td><td>Algorithmic Audits</td><td>upcoming</td></tr>
-<tr><td>5</td><td>Modern Methods</td><td>upcoming</td></tr>
+<tr><td><b>2</b></td><td><b><a href="../module-02/slides.html">Audit & Correspondence Studies</a></b></td><td>next</td></tr>
+<tr><td>3</td><td><a href="../module-03/slides.html">Decomposition Methods</a></td><td>✓ done</td></tr>
+<tr><td>4</td><td><a href="../module-04/slides.html">Algorithmic Audits</a></td><td>✓ done</td></tr>
+<tr><td>5</td><td><a href="../module-05/slides.html">Modern Methods & Practitioner</a></td><td>✓ done</td></tr>
 </table>
 
 Say **"start module 2"** when ready.
